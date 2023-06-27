@@ -1,12 +1,12 @@
 # Check .ipynb file for codes and full project
 
-Abstract
+## Abstract
 
 Real estate is the foundation for many life milestones like owning a home, starting a family or a business, and more. However, it may be hard to break into the real estate world without first doing a lot of research and planning because real estate is after all, an investment. By building a ML model that helps predict the price of home, this can hopefully help to make the process easier for prospective homeowners and sellers. The data we will be using encompasses more than 5 million Russian real estate sales from 2018 - 2021 and has multiple variables such as the price of a house, listing date and time, geographic location, region, and information about the building (type, storeys, floor, living rooms, rooms). Although our dataset is in the Russian market, it provides us a lot of data points that can allow us to learn more about the different models and generalize it to different markets.
 
 We will perform some EDA analysis to view the correlation of the different factors, and then build a linear regression model using CART regression, logistic regression, and random forest. We will then evaluate the performance of our model using mean absolute error (MAE).
 
-Background
+## Background
 
 The real estate market has been a pivotal factor and contributor in the economy as, according to the National Association of Home Builders, housing’s combined contribution to gross domestic product (GDP) generally averages 15-18%[1]. This percentage is calculated based on both residential investment and consumption spending on housing. Not only is housing a contributor to the economy but it is also an important asset to people’s lives as it not only signifies having a place to sleep in but is often perceived as a way to show one’s social status and a valuable asset where money can be allocated.
 
@@ -18,11 +18,11 @@ Our exploration will, therefore, focus on Moscow, the capital of Russia which ha
 
 There has been a lot of prior (and ongoing) research within the real estate industry, especially real estate companies such as Zillow with their “Neural Zestimate[4]," Redfin with their “Redfin Estimate[5]," and many other real estate companies also have their own models for estimating home prices. Since each model is built differently, this leads to varying price estimations. However, the bases of the models are similar as they take in large amounts of previous transactions and/or MLS data to get various variables to find good features to base the model off of as they keep retraining to get better results.
 
-Problem Statement
+## Problem Statement
 
 The real estate market can be a turbulent and rapidly changing environment, where it is often hard to predict the actual value due to many factors.Due to the multitude of different constants, we will focus our model on the general description of the property. We aim to make it easier for people to get this type of information by training a ML model on a large dataset of previous home purchases in order to predict what price point a home may be at.
 
-Data
+## Data
 
 Our current best candidate is the following dataset of Russian Real Estate pricing from 2018-2021. The dataset contains an incredible 5 million+ data points, with no null values and only a few thousand duplicate rows. Therefore, our data is very-well poised to avoid generalization without uses of techniques like cross-validation.
 
@@ -36,7 +36,7 @@ Critical variables mostly encompass the house descriptions and the time of publi
 
 Finally, we will need to convert data and time of publication to only the year, and potentially also the month, in case we’d like to do time series analysis. As mentioned earlier, we’ll also remove the latitude and longitude due to concerns of privacy. Finally, for our non-tree models, we will also normalize our data points by z-score, since data like price in rubles will be orders of magnitude larger than number of rooms.
 
-Proposed Solution
+## Proposed Solution
 
 Note that we discuss error metrics, including justifications for L1 loss (MAE), in the Evaluation Metrics section.
 
@@ -54,11 +54,11 @@ Then, if we have enough computational resources, we can perform grid search on d
 
 Finally, we will use sklearn for all implementations for 1) readable code, and 2) efficient, thoroughly tested implementations of the algorithms discussed above. While tools like Keras do have gpu acceleration, these methods aren’t as useful for our models as compared to neural network models.
 
-Evaluation Metrics
+## Evaluation Metrics
 
 The three most common metrics for regression are mean squared error (MSE), mean absolute error (MAE) and root mean squared error (RMSE). MSE and RMSE heavily penalize outliers, while MAE proportionately penalizes all errors. Our data includes some more extreme outliers (10 living rooms, 39th floor, etc). For these ‘extreme’ sorts of houses, there are also many extra possible factors beyond measurable features like number of rooms; for example, the ‘art’ of designing expensive homes with luxury features. So, using MSE or RMSE would likely bias our model to these extreme outliers while lowering our model’s success in gauging prices for a majority of houses on the market. Conversely, MAE would result in a better representation of the data for a majority of ‘normal’ cases. Therefore, we will stick to MAE.
 
-Model Fitting
+## Model Fitting
 When we began training models, an immediate issue presented itself: we didn't have sufficient compuational resources to handle very large data using only Sklearn's cpu-only implenetaions. This made training very slow and hyperparameter tuning out of the question.
 
 However, training only on our data with hyperparams chosen heurisitically did not offer good enough results. So, in order to allow for hyperparam tuning on our large data, we implement Nvidia's RAPIDS API, which offers models with similar syntax to Sklearn, but with GPU acceleration. In particular, RAPIDS includes the CuML package, which accelerates training significantly.
@@ -67,9 +67,9 @@ The main challenge with using RAPIDS was technical implementation: we acheived m
 
 Finally, although we will be testing different models, we will not be peforming Nested CV for algorithm selection. Even with the RAPIDS API, performing Nested CV would be simply too computationally intensive, and also likely wouldn't realize better results on our large data.
 
-Discussion
+## Discussion
 
-Interpreting the result
+### Interpreting the result
 
 A clear observation is that all of our models perform best on cheaper/standard-price housing. When applied to the real world, our model would be the most useful for the average consumer looking for an afforable place in Moscow. This result was expected, since most of our samples were for real estate with lower value, so of course our model performed better for these data.
 
@@ -81,7 +81,7 @@ Our second subpoint of justification is that all of our models over/under-value 
 
 Our final subpoint of note is that, if used in the real world given the data currently available, our models would be best used to predict low-end housing. Firstly, there is much less data available for high-end housing due to the low demand for such housing from the general public, so it is difficult to fit a model wihtout overfitting to the available data; we see this reflected in the very high MAE for housing worth more than $120k. Secondly, in a practical sense, high-end housing is likely even more subject to variation from metrics that are difficult to track (luxury features, 'art' of design and layout, etc.). These results fit well with our overall goal of making real estate value prediction more accessible and straightforward, since those selling expensive properties likely have resources for huamn prediction from professional agents.
 
-Limitations
+## Limitations
 
 Our findings indicate an important need for improved data in Moscow/Russian real estate markets. Because the real estate market in Russia (and, in our case, Moscow specfically) is emerging, data collection is likely not to the same standard as in places like America, where established housing and real estate services like Zillow have been collecting data on houses for years. To perform better predictive analysis on Moscow real estate prices would require sophisticated data centralization and colletion initiatives which have not been implemented yet. Once the market has matured more, and as more feature-rich data becomes available, ML and DL methods can be more easily applied for sophisticated predictive analysis. on many different ranges of pricing and many different types of real estate.
 
@@ -89,7 +89,7 @@ Additionally, our data does not include new costs from 2022 or 2023. Geopolitica
 
 Finally, additional hyperparam tuning for XGBoost and more complex DNN strucutres (e.g. very deep NN with skip connections, additional tuning for LeakyReLU, AdamW, etc hyperparams, etc) might result in better performance from these models. However, this sort of hyperparam tuning would require either better computational resources or more time.
 
-Ethics & Privacy
+## Ethics & Privacy
 
 The Russian economy is currently in a volatile position due to the war in Ukraine. If our model were to be used as a source of truth, and if it were too optimistic or pessimistic, we could wrongfully inflate the market or cause people to sell their homes for less than they are truly worth. Real estate investments can make or break one’s livelihood, especially in a turbulent and growing market like Russia, so making sure our model is functional and usable is important.
 The dataset doesn’t contain explicit personal information, but it contains information like date and time of listing publication and longitude/latitude location, which could potentially be used to identify individuals.
